@@ -6,5 +6,5 @@ const lu = require('./lu');
 const nl = require('./nl');
 
 (async () => {
-  await Promise.all([at(), be(), de(), frEs(), lu(), nl()]);
+  await Promise.all([at(), be(), frEs(), lu(), nl()]);
 })();
