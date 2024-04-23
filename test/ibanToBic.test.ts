@@ -1,5 +1,5 @@
-const ibantools = require('ibantools');
-const { ibanToBic } = require('..');
+import * as ibantools from 'ibantools';
+import { ibanToBic } from '../src/index';
 
 test('determines the correct BIC for an Austrian IBAN', () => {
   expect(ibanToBic('AT781400039828399259')).toBe('BAWAATWWXXX');

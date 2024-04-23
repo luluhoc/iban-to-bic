@@ -1,6 +1,6 @@
-const { writeOutputs, downloadJSDOM, downloadCSV } = require('./utils');
+import { writeOutputs, downloadJSDOM, downloadCSV } from './utils';
 
-module.exports = async () => {
+export default async () => {
   const domain = 'https://www.ecb.europa.eu';
   const document = await downloadJSDOM(
     domain + '/stats/financial_corporations/list_of_financial_institutions/html/monthly_list-MID.en.html',
@@ -11,6 +11,7 @@ module.exports = async () => {
   const consideredCountries = ['fr', 'es'];
 
   const bankCodesObj = consideredCountries.reduce((out, country) => {
+    // @ts-expect-error
     out[country] = {};
     return out;
   }, {});
@@ -21,6 +22,7 @@ module.exports = async () => {
     if (!consideredCountries.includes(riadCountry) || !bank.BIC) continue;
 
     const bankCode = riadCode.substring(2);
+    // @ts-expect-error
     bankCodesObj[riadCountry][bankCode] = {
       bic: bank.BIC,
       name: bank.NAME,
@@ -35,6 +37,7 @@ module.exports = async () => {
   }
 
   for (const country of consideredCountries) {
+    // @ts-expect-error
     await writeOutputs(country, bankCodesObj[country]);
   }
 };

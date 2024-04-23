@@ -1,34 +1,37 @@
-const assert = require('assert');
-const path = require('path');
-const fs = require('fs-extra');
-const fetch = require('node-fetch-commonjs');
-const xlsx = require('xlsx');
-const { JSDOM } = require('jsdom');
-const ibantools = require('ibantools');
-const neatCsv = require('neat-csv');
-const iconv = require('iconv-lite');
+import assert from 'assert';
+import path from 'path';
+import fs from 'fs-extra';
+import fetch, { RequestInfo } from 'node-fetch-commonjs';
+import xlsx from 'xlsx';
+import { JSDOM } from 'jsdom';
+import * as ibantools from 'ibantools';
+import neatCsv from 'neat-csv';
+import iconv from 'iconv-lite';
 
 // maps column index starting at 0 to A,...,Z,AA,AB,...,ZY,ZZ
-function columnCode(col) {
+export function columnCode(col: number) {
   assert(col >= 0 && col < 26 + 26 * 26);
-  const letter = n => String.fromCharCode(n + 'A'.charCodeAt(0));
+  const letter = (n:number) => String.fromCharCode(n + 'A'.charCodeAt(0));
   if (col < 26) return letter(col);
   return letter(Math.floor(col / 26) - 1) + letter(col % 26);
 }
 
 // col counted from 0, row counted from 1
-function getCellValue(worksheet, col, row) {
+export function getCellValue(worksheet: { [x: string]: any; }, col: number, row: any) {
   const v = worksheet[`${columnCode(col)}${row}`];
   return v ? v.v : v;
 }
 
-async function writeOutputs(name, bankCodesObj) {
-  await fs.writeJSON(path.join(__dirname, `../datasets-extended/${name}.json`), bankCodesObj);
+export async function writeOutputs(name: string, bankCodesObj: { [s: string]: unknown; } | ArrayLike<unknown>) {
+  await fs.writeJSON(path.join(__dirname, `../../datasets-extended/${name}.json`), bankCodesObj);
 
+  // @ts-expect-error
   const bankCodesToBic = Object.entries(bankCodesObj).reduce((prev, [code, { bic, branches }]) => {
+      // @ts-expect-error
     if (bic) prev[code] = bic;
+      // @ts-expect-error
     else if (branches && branches[0] && branches[0].bic) prev[code] = branches[0].bic;
-
+  // @ts-expect-error
     if (prev[code]) assert(ibantools.isValidBIC(prev[code]), 'invalid BIC: ' + prev[code]);
 
     return prev;
@@ -37,16 +40,16 @@ async function writeOutputs(name, bankCodesObj) {
   await fs.writeJSON(path.join(__dirname, `../datasets/${name}.json`), bankCodesToBic);
 }
 
-async function downloadXLSX(url, sheet) {
+export async function downloadXLSX(url: URL | RequestInfo, sheet: string | number) {
   const doc = xlsx.read(await (await fetch(url)).buffer(), { type: 'buffer' });
   return sheet ? doc.Sheets[sheet] : doc;
 }
 
-async function downloadJSDOM(url) {
+export async function downloadJSDOM(url: URL | RequestInfo) {
   return new JSDOM(await (await fetch(url)).text()).window.document;
 }
 
-async function downloadCSV(url, options, encoding, linesModifier) {
+export async function downloadCSV(url: URL | RequestInfo, options: neatCsv.Options | undefined, encoding: string, linesModifier?: { (lines: any): any; (arg0: string[]): any[]; }) {
   const fetchRes = await fetch(url);
   let text;
   if (encoding) {
@@ -59,18 +62,8 @@ async function downloadCSV(url, options, encoding, linesModifier) {
   return neatCsv(text, options);
 }
 
-function assertTableHead(worksheet, row, values) {
+export function assertTableHead(worksheet: { [x: string]: any; }, row: any, values: string | any[]) {
   for (let i = 0; i < values.length; i++) {
     assert.strictEqual(getCellValue(worksheet, i, row), values[i]);
   }
 }
-
-module.exports = {
-  columnCode,
-  getCellValue,
-  writeOutputs,
-  downloadXLSX,
-  downloadJSDOM,
-  downloadCSV,
-  assertTableHead,
-};
