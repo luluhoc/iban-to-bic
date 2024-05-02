@@ -1,9 +1,10 @@
 {
   "name": "iban-to-bic-ts",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Determines the SWIFT BIC of an IBAN.",
   "browser": "lib/iban-to-bic.js",
   "types": "dist/src/index.d.ts",
+  "main": "dist/src/index.js",
   "files": [
     "dist",
     "lib"

@@ -6,5 +6,5 @@ import lu from './lu';
 import nl from './nl';
 
 (async () => {
-  await Promise.all([at(), be(), frEs(), lu(), nl()]);
+  await Promise.all([frEs()]);
 })();

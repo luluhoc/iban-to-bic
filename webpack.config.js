@@ -1,7 +1,4 @@
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const Dec = require('types-webpack-bundler');
 const path = require('path');
-const TypescriptDeclarationPlugin = require('typescript-declaration-webpack-plugin');
 
 module.exports = {
 	context: __dirname,
@@ -17,9 +14,6 @@ module.exports = {
     ],
 	},
 	devtool: 'source-map',
-	plugins: [new TypescriptDeclarationPlugin({
-	
-})],
 	resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
