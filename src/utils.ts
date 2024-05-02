@@ -36,7 +36,6 @@ export async function writeOutputs(name: string, bankCodesObj: { [s: string]: un
 
     return prev;
   }, {});
-  console.log('bankCodesToBic', bankCodesToBic);
   await fs.writeJSON(path.join(__dirname, `../datasets/${name}.json`), bankCodesToBic);
 }
 
